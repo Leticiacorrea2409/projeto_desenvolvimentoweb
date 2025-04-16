@@ -352,3 +352,64 @@ document.addEventListener('DOMContentLoaded', function() {
         currentYearElement.textContent = currentYear;
     }
 });
+// === SCROLL SUAVE ENTRE SEÇÕES ===
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+
+        // Se for âncora interna (começa com #), faz scroll suave
+        if (href.startsWith('#')) {
+            e.preventDefault();
+            const target = document.querySelector(href);
+            if (target) {
+                window.scrollTo({
+                    top: target.offsetTop - 70, // compensação da navbar fixa
+                    behavior: 'smooth'
+                });
+            }
+        }
+        // Se não, deixa seguir normalmente para outra página
+    });
+});
+
+// === DESTACAR LINK ATIVO COM BASE NA SCROLL ===
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+function updateActiveLink() {
+    let scrollPos = window.pageYOffset + 80;
+
+    sections.forEach(section => {
+        if (
+            scrollPos >= section.offsetTop &&
+            scrollPos < section.offsetTop + section.offsetHeight
+        ) {
+            const id = section.getAttribute('id');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${id}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+    });
+}
+
+window.addEventListener('scroll', updateActiveLink);
+
+// === MARCAR LINK ATUAL COM BASE NA PÁGINA ===
+document.addEventListener("DOMContentLoaded", () => {
+    const currentPage = window.location.pathname.split("/").pop();
+    
+    navLinks.forEach(link => {
+        const linkPage = link.getAttribute("href");
+        if (
+            linkPage === currentPage ||
+            (linkPage === "index.html" && (currentPage === "" || currentPage === "index.html"))
+        ) {
+            link.classList.add("active");
+        } else {
+            link.classList.remove("active");
+        }
+    });
+});
